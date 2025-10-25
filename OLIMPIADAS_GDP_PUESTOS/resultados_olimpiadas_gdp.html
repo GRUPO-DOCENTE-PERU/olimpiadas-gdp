@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏆 Podio Olimpiadas GDP</title>
+  <style>
+    /* ====== FONDO Y FUENTE ====== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at bottom, #081133, #0a0a1d 70%);
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 3.0em;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700, 0 0 20px #ffcc33;
+      letter-spacing: 2px;
+      z-index: 2;
+      position: relative;
+    }
+
+    /* ====== CONTENEDOR DEL PODIO ====== */
+    .podio-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      width: 90%;
+      height: 420px;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    /* ====== CADA PODIO ====== */
+    .podio {
+      width: 18%;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 1s ease-in-out, height 1s ease-in-out;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(500px);
+      opacity: 0;
+      text-align: center;
+    }
+
+    .animate {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ====== COLORES METÁLICOS ====== */
+    .oro {
+      background: linear-gradient(180deg, #fff58e, #d4af37 60%, #a67c00);
+    }
+    .plata {
+      background: linear-gradient(180deg, #f5f5f5, #c0c0c0 60%, #8f8f8f);
+    }
+    .bronce {
+      background: linear-gradient(180deg, #ffcc99, #b87333 60%, #7b3f00);
+    }
+    .azul {
+      background: linear-gradient(180deg, #8fc6ff, #3b6edc 60%, #274b8f);
+    }
+
+    /* ====== COPA ====== */
+    .copa {
+      position: absolute;
+      bottom: 100%;
+      transform: translateY(10px);
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+      transition: transform 0.8s ease;
+    }
+
+    /* Tamaño gradual por puesto */
+    .podio:nth-child(1) .copa { width: 130px; }
+    .podio:nth-child(2) .copa { width: 115px; }
+    .podio:nth-child(3) .copa { width: 100px; }
+    .podio:nth-child(4) .copa { width: 85px; }
+
+    .podio:hover .copa {
+      transform: translateY(-10px);
+    }
+
+    /* ====== INFO NOMBRE Y EMOJI ====== */
+    .info {
+      position: absolute;
+      top: -225px;
+      text-align: center;
+    }
+
+    .nombre {
+      font-size: 1.8em;
+      font-weight: bold;
+      text-shadow: 0 2px 4px #000;
+      color: #fff;
+    }
+
+    /* ====== PUNTAJE DENTRO DE LA BARRA ====== */
+    .puntos {
+      font-size: 2.2em;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 2px 3px #000;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+    }
+
+    /* ====== LÍNEA BASE BRILLANTE ====== */
+    .linea-base {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(90deg, #ffd700, #ffffff, #ffd700);
+      box-shadow: 0 0 15px #ffd700, 0 0 30px #ffcc33;
+      z-index: 3;
+    }
+
+    /* ====== PARTICULAS DORADAS ====== */
+    #particles, #confeti {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .particle, .confeti {
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .particle {
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, #ffd700, transparent);
+      opacity: 0.8;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+    }
+
+    /* ====== CONFETI ====== */
+    .confeti {
+      width: 6px;
+      height: 12px;
+      opacity: 0.9;
+      animation: fallDown linear forwards;
+    }
+
+    @keyframes fallDown {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="particles"></div>
+  <div id="confeti"></div>
+
+  <h1>🏅 OLIMPIADAS GDP</h1>
+
+  <div class="podio-container" id="podio-container"></div>
+  <div class="linea-base"></div>
+
+  <script>
+    /* ====== DATOS ====== */
+    const MAX_PUNTOS = 100;
+    const equipos = [
+      { nombre: "🔥 Equipo A", puntos: 100, color: "oro" },
+      { nombre: "💪 Equipo B", puntos: 82, color: "plata" },
+      { nombre: "🌈 Equipo C", puntos: 78, color: "bronce" },
+      { nombre: "⚡ Equipo D", puntos: 60, color: "azul" }
+    ];
+
+    // Copas por puesto
+    const copasPorPuesto = [
+      "./puesto1.png",
+      "./puesto2.png",
+      "./puesto3.png",
+      "https://cdn-icons-png.flaticon.com/512/1828/1828640.png"
+    ];
+
+    const contenedor = document.getElementById("podio-container");
+
+    function renderPodio() {
+      // Ordenar por puntaje descendente
+      equipos.sort((a, b) => b.puntos - a.puntos);
+      contenedor.innerHTML = "";
+
+      equipos.forEach((e, i) => {
+        const podio = document.createElement("div");
+        podio.className = `podio ${e.color}`;
+        podio.style.height = `${(e.puntos / MAX_PUNTOS) * 380}px`;
+
+        // Asignar copa según puesto actual (después de ordenar)
+        const copa = document.createElement("img");
+        copa.src = copasPorPuesto[i] || copasPorPuesto[copasPorPuesto.length - 1];
+        copa.className = "copa";
+
+        const info = document.createElement("div");
+        info.className = "info";
+
+        const nombre = document.createElement("div");
+        nombre.className = "nombre";
+        nombre.innerText = e.nombre;
+
+        const puntos = document.createElement("div");
+        puntos.className = "puntos";
+        puntos.innerText = `${e.puntos} pts`;
+
+        info.appendChild(nombre);
+        podio.appendChild(info);
+        podio.appendChild(copa);
+        podio.appendChild(puntos);
+        contenedor.appendChild(podio);
+
+        // Animación de entrada escalonada
+        setTimeout(() => podio.classList.add("animate"), i * 400 + 500);
+
+        // Lanzar confeti al final del último podio
+        if (i === equipos.length - 1) {
+          setTimeout(() => lanzarConfeti(), i * 400 + 2000);
+        }
+      });
+    }
+
+    /* ====== PARTICULAS DE FONDO ====== */
+    const particleContainer = document.getElementById("particles");
+    function createParticle() {
+      const particle = document.createElement("div");
+      particle.classList.add("particle");
+      const size = Math.random() * 5 + 2;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDuration = `${5 + Math.random() * 5}s`;
+      particle.style.opacity = Math.random();
+      particleContainer.appendChild(particle);
+      setTimeout(() => particle.remove(), 10000);
+    }
+    setInterval(createParticle, 100);
+
+    /* ====== CONFETI DE CELEBRACIÓN ====== */
+    const confetiContainer = document.getElementById("confeti");
+    function lanzarConfeti() {
+      for (let i = 0; i < 120; i++) {
+        const confeti = document.createElement("div");
+        confeti.classList.add("confeti");
+        const color = Math.random() > 0.5 ? "#FFD700" : "#C0C0C0";
+        confeti.style.background = color;
+        confeti.style.left = `${Math.random() * 100}%`;
+        confeti.style.animationDuration = `${3 + Math.random() * 4}s`;
+        confeti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        confetiContainer.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 6000);
+      }
+    }
+
+    renderPodio();
+  </script>
+</body>
+</html>
+
