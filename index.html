@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🏆 Podio Olimpiadas GDP</title>
   <style>
-    /* ====== FONDO Y FUENTE ====== */
     html, body {
       margin: 0;
       padding: 0;
@@ -19,7 +18,7 @@
     h1 {
       text-align: center;
       margin-top: 20px;
-      font-size: 3.0em;
+      font-size: 3em;
       color: #ffd700;
       text-shadow: 0 0 10px #ffd700, 0 0 20px #ffcc33;
       letter-spacing: 2px;
@@ -27,7 +26,6 @@
       position: relative;
     }
 
-    /* ====== CONTENEDOR DEL PODIO ====== */
     .podio-container {
       display: flex;
       justify-content: space-around;
@@ -39,9 +37,9 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
+      transition: all 0.5s ease;
     }
 
-    /* ====== CADA PODIO ====== */
     .podio {
       width: 18%;
       border-radius: 10px 10px 0 0;
@@ -57,26 +55,14 @@
       text-align: center;
     }
 
-    .animate {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .animate { transform: translateY(0); opacity: 1; }
 
-    /* ====== COLORES METÁLICOS ====== */
-    .oro {
-      background: linear-gradient(180deg, #fff58e, #d4af37 60%, #a67c00);
-    }
-    .plata {
-      background: linear-gradient(180deg, #f5f5f5, #c0c0c0 60%, #8f8f8f);
-    }
-    .bronce {
-      background: linear-gradient(180deg, #ffcc99, #b87333 60%, #7b3f00);
-    }
-    .azul {
-      background: linear-gradient(180deg, #8fc6ff, #3b6edc 60%, #274b8f);
-    }
+    /* Colores por puesto */
+    .puesto-1 { background: linear-gradient(180deg, #fff58e, #d4af37 60%, #a67c00); }
+    .puesto-2 { background: linear-gradient(180deg, #f5f5f5, #c0c0c0 60%, #8f8f8f); }
+    .puesto-3 { background: linear-gradient(180deg, #ffcc99, #b87333 60%, #7b3f00); }
+    .puesto-4 { background: linear-gradient(180deg, #8fc6ff, #3b6edc 60%, #274b8f); }
 
-    /* ====== COPA ====== */
     .copa {
       position: absolute;
       bottom: 100%;
@@ -85,31 +71,27 @@
       transition: transform 0.8s ease;
     }
 
-    /* Tamaño gradual por puesto */
-    .podio:nth-child(1) .copa { width: 130px; }
-    .podio:nth-child(2) .copa { width: 115px; }
-    .podio:nth-child(3) .copa { width: 100px; }
-    .podio:nth-child(4) .copa { width: 85px; }
+    .podio:hover .copa { transform: translateY(-10px); }
 
-    .podio:hover .copa {
-      transform: translateY(-10px);
-    }
+    /* Tamaños graduales */
+    .puesto-1 .copa { width: 130px; }
+    .puesto-2 .copa { width: 120px; }
+    .puesto-3 .copa { width: 95px; }
+    .puesto-4 .copa { width: 80px; }
 
-    /* ====== INFO NOMBRE Y EMOJI ====== */
     .info {
       position: absolute;
-      top: -225px;
+      top: -220px;
       text-align: center;
     }
 
     .nombre {
-      font-size: 1.8em;
+      font-size: 1.5em;
       font-weight: bold;
       text-shadow: 0 2px 4px #000;
       color: #fff;
     }
 
-    /* ====== PUNTAJE DENTRO DE LA BARRA ====== */
     .puntos {
       font-size: 2.2em;
       color: #fff;
@@ -121,7 +103,6 @@
       width: 100%;
     }
 
-    /* ====== LÍNEA BASE BRILLANTE ====== */
     .linea-base {
       position: absolute;
       bottom: 0;
@@ -133,7 +114,6 @@
       z-index: 3;
     }
 
-    /* ====== PARTICULAS DORADAS ====== */
     #particles, #confeti {
       position: fixed;
       top: 0; left: 0;
@@ -148,8 +128,7 @@
     }
 
     .particle {
-      width: 4px;
-      height: 4px;
+      width: 4px; height: 4px;
       background: radial-gradient(circle, #ffd700, transparent);
       opacity: 0.8;
       animation: floatUp linear infinite;
@@ -160,7 +139,6 @@
       100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
     }
 
-    /* ====== CONFETI ====== */
     .confeti {
       width: 6px;
       height: 12px;
@@ -169,14 +147,60 @@
     }
 
     @keyframes fallDown {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ====== 🔹 ESTILOS RESPONSIVE ====== */
+    @media (max-width: 1024px) {
+      h1 { font-size: 2.5em; }
+      .podio-container { width: 95%; height: 350px; }
+      .nombre { font-size: 1.8em; }
+      .puntos { font-size: 1.8em; }
+      .info { top: -180px; }
+      .puesto-1 .copa { width: 110px; }
+      .puesto-2 .copa { width: 100px; }
+      .puesto-3 .copa { width: 85px; }
+      .puesto-4 .copa { width: 70px; }
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2em; }
+      .podio-container { height: 320px; gap: 10px; margin-top: 0em; }
+      .podio { width: 20%; }
+      .nombre { font-size: 1.2em; }
+      .puntos { font-size: 1.6em; }
+      .info { top: -160px; }
+    }
+
+    @media (max-width: 600px) {
+      html, body { overflow-y: 0; }
+      .podio-container {
+        flex-wrap: wrap;
+        height: auto;
+        bottom: auto;
+        top: 100px;
+        gap: 10px;
       }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
+      .podio {
+        width: 40%;
+        height: 180px !important;
+        margin-bottom: 20px;
+        margin-top: 6em;
       }
+      .info { top: -120px; }
+      .nombre { font-size: 1em; }
+      .puntos { font-size: 1.4em; }
+      .copa { width: 70px !important; }
+    }
+
+    @media (max-width: 400px) {
+      h1 { font-size: 1.6em; margin-top: 10px; }
+      .podio { width: 45%; height: 150px !important; }
+      .nombre { font-size: 0.9em; }
+      .puntos { font-size: 1.2em; }
+      .info { top: -100px; }
+      .copa { width: 60px !important; }
     }
   </style>
 </head>
@@ -191,16 +215,15 @@
   <div class="linea-base"></div>
 
   <script>
-    /* ====== DATOS ====== */
-    const MAX_PUNTOS = 100;
+    const MAX_PUNTOS = 50;
     const equipos = [
-      { nombre: "🔥 Equipo A", puntos: 100, color: "oro" },
-      { nombre: "💪 Equipo B", puntos: 82, color: "plata" },
-      { nombre: "🌈 Novalokos", puntos: 78, color: "bronce" },
-      { nombre: "⚡ Equipo D", puntos: 60, color: "azul" }
+      { nombre: "🥃 Tequila Power", puntos: 15 },
+      { nombre: "🎃 Calabazombies", puntos: 15 },
+      { nombre: "🤪 Novalokos", puntos: 30 },
+      { nombre: "🐎 Ponys Salvajes", puntos: 20 }
     ];
 
-    // Copas por puesto
+    const coloresPorPuesto = ["puesto-1", "puesto-2", "puesto-3", "puesto-4"];
     const copasPorPuesto = [
       "./puesto1.png",
       "./puesto2.png",
@@ -211,23 +234,21 @@
     const contenedor = document.getElementById("podio-container");
 
     function renderPodio() {
-      // Ordenar por puntaje descendente
       equipos.sort((a, b) => b.puntos - a.puntos);
       contenedor.innerHTML = "";
 
       equipos.forEach((e, i) => {
         const podio = document.createElement("div");
-        podio.className = `podio ${e.color}`;
+        const claseColor = coloresPorPuesto[i] || "puesto-4";
+        podio.className = `podio ${claseColor}`;
         podio.style.height = `${(e.puntos / MAX_PUNTOS) * 380}px`;
 
-        // Asignar copa según puesto actual (después de ordenar)
         const copa = document.createElement("img");
         copa.src = copasPorPuesto[i] || copasPorPuesto[copasPorPuesto.length - 1];
         copa.className = "copa";
 
         const info = document.createElement("div");
         info.className = "info";
-
         const nombre = document.createElement("div");
         nombre.className = "nombre";
         nombre.innerText = e.nombre;
@@ -242,17 +263,13 @@
         podio.appendChild(puntos);
         contenedor.appendChild(podio);
 
-        // Animación de entrada escalonada
         setTimeout(() => podio.classList.add("animate"), i * 400 + 500);
-
-        // Lanzar confeti al final del último podio
         if (i === equipos.length - 1) {
           setTimeout(() => lanzarConfeti(), i * 400 + 2000);
         }
       });
     }
 
-    /* ====== PARTICULAS DE FONDO ====== */
     const particleContainer = document.getElementById("particles");
     function createParticle() {
       const particle = document.createElement("div");
@@ -268,7 +285,6 @@
     }
     setInterval(createParticle, 100);
 
-    /* ====== CONFETI DE CELEBRACIÓN ====== */
     const confetiContainer = document.getElementById("confeti");
     function lanzarConfeti() {
       for (let i = 0; i < 120; i++) {
@@ -288,5 +304,3 @@
   </script>
 </body>
 </html>
-
-
