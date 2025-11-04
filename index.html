@@ -211,18 +211,54 @@
 
   <h1>🏅 OLIMPIADAS GDP</h1>
 
+  <button id="btnActualizar" class="btn-actualizar">🔄 Actualizar</button>
+
+  <style>
+    .btn-actualizar {
+      position: fixed;
+      top: 22px;
+      right: 22px;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f8d85a;
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      padding: 6px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
+    }
+
+    .btn-actualizar:hover {
+      background: rgba(255, 215, 0, 0.25);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.4);
+      transform: scale(1.05);
+    }
+
+    .btn-actualizar:active {
+      transform: scale(0.96);
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+    }
+
+    /* 🔹 Ajuste RESPONSIVE para pantallas menores a 768px */
+    @media (max-width: 768px) {
+      .btn-actualizar {display: none;}
+    }
+  </style>
+
+
+
   <div class="podio-container" id="podio-container"></div>
   <div class="linea-base"></div>
 
   <script>
-    const MAX_PUNTOS = 35;
-    const equipos = [
-      { nombre: "🥃 Tequila Power", puntos: 15 },
-      { nombre: "🎃 Calabazombies", puntos: 15 },
-      { nombre: "🤪 Novalokos", puntos: 30 },
-      { nombre: "🐎 Ponys Salvajes", puntos: 20 }
-    ];
-
+    const SHEET_URL = "https://opensheet.elk.sh/1JgPv5NbLDZ-cqsqFprn9PFz8ncopcQEAEpmJuwrx5qU/RESULTADOS";
+    const contenedor = document.getElementById("podio-container");
     const coloresPorPuesto = ["puesto-1", "puesto-2", "puesto-3", "puesto-4"];
     const copasPorPuesto = [
       "./puesto1.png",
@@ -231,12 +267,37 @@
       "https://cdn-icons-png.flaticon.com/512/1828/1828640.png"
     ];
 
-    const contenedor = document.getElementById("podio-container");
+    let equipos = [];
+    let MAX_PUNTOS = 35;
 
+    // 🟢 Cargar datos
+    async function cargarDatos() {
+      try {
+        const res = await fetch(`${SHEET_URL}?t=${Date.now()}`, { cache: "no-store" });
+        const data = await res.json();
+
+        equipos = data.map(item => ({
+          nombre: item.nombre,
+          puntos: parseInt(item.puntos) || 0
+        }));
+
+        if (data[0]?.max_puntos) MAX_PUNTOS = parseInt(data[0].max_puntos) || 35;
+        renderPodio();
+
+        // Mensaje visual breve
+        const btn = document.getElementById("btnActualizar");
+        btn.textContent = " Actualizando...";
+        setTimeout(() => (btn.textContent = "Actualizar"), 1500);
+      } catch (e) {
+        console.error("Error al cargar datos:", e);
+        contenedor.innerHTML = "<p style='color:red'>Error al cargar datos 😢</p>";
+      }
+    }
+
+    // 🏆 Renderizar podio
     function renderPodio() {
       equipos.sort((a, b) => b.puntos - a.puntos);
       contenedor.innerHTML = "";
-
       equipos.forEach((e, i) => {
         const podio = document.createElement("div");
         const claseColor = coloresPorPuesto[i] || "puesto-4";
@@ -249,13 +310,14 @@
 
         const info = document.createElement("div");
         info.className = "info";
+
         const nombre = document.createElement("div");
         nombre.className = "nombre";
-        nombre.innerText = e.nombre;
+        nombre.textContent = e.nombre;
 
         const puntos = document.createElement("div");
         puntos.className = "puntos";
-        puntos.innerText = `${e.puntos} pts`;
+        puntos.textContent = `${e.puntos} pts`;
 
         info.appendChild(nombre);
         podio.appendChild(info);
@@ -265,26 +327,12 @@
 
         setTimeout(() => podio.classList.add("animate"), i * 400 + 500);
         if (i === equipos.length - 1) {
-          setTimeout(() => lanzarConfeti(), i * 400 + 2000);
+          setTimeout(lanzarConfeti, i * 400 + 2000);
         }
       });
     }
 
-    const particleContainer = document.getElementById("particles");
-    function createParticle() {
-      const particle = document.createElement("div");
-      particle.classList.add("particle");
-      const size = Math.random() * 5 + 2;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${Math.random() * 100}%`;
-      particle.style.animationDuration = `${5 + Math.random() * 5}s`;
-      particle.style.opacity = Math.random();
-      particleContainer.appendChild(particle);
-      setTimeout(() => particle.remove(), 10000);
-    }
-    setInterval(createParticle, 100);
-
+    // 🎉 Confeti
     const confetiContainer = document.getElementById("confeti");
     function lanzarConfeti() {
       for (let i = 0; i < 120; i++) {
@@ -300,8 +348,33 @@
       }
     }
 
-    renderPodio();
+    // ✨ Fondo
+    const particleContainer = document.getElementById("particles");
+    function createParticle() {
+      const particle = document.createElement("div");
+      particle.classList.add("particle");
+      const size = Math.random() * 5 + 2;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDuration = `${5 + Math.random() * 5}s`;
+      particle.style.opacity = Math.random();
+      particleContainer.appendChild(particle);
+      setTimeout(() => particle.remove(), 10000);
+    }
+    setInterval(createParticle, 100);
+
+    // 🚀 Inicializar
+    cargarDatos();
+
+    // 🧩 Vincular evento del botón (seguro y moderno)
+    document.getElementById("btnActualizar").addEventListener("click", () => {
+      contenedor.innerHTML = "<p style='color:white'>Actualizando...</p>";
+      cargarDatos();
+    });
   </script>
+
 </body>
 </html>
+
 
